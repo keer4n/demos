@@ -3,10 +3,12 @@
 
 	import TFJS from './demos/TFJS.svelte';
 	import TextToImage from './demos/TextToImage.svelte';
+	import HNClone from './demos/HNClone.svelte';
 
 	const views = {
 		TFJS,
 		TextToImage,
+		HNClone
 	}
 
 	// set first view as selected
@@ -29,6 +31,7 @@
 		<option value={view} selected={view == selectedView}>{view}</option>
 	{/each}
 	</select>
+	
 
 	<CollapsibleSeparator/>
 
