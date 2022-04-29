@@ -1,18 +1,56 @@
 <script lang="ts">
-    import { getItem, getBestStories } from '../apis/hn.js';
-    let stories =
+    import { getItem, getBestStories, getNewStories, getTopStories } from '../apis/hn.js';
+    let stories = []
     getBestStories()
         .then(storyIds => {
-            const storyPromises = storyIds.slice(0, 15).map(id => getItem(id));
-            return Promise.all(storyPromises);
-        })
+            storyIds.forEach(async id => {
+                const story = await getItem(id);
+                stories = [...stories, story];
+            });
+        });
+    
+    window.addEventListener('scroll', maybeLoadMore);
+    window.addEventListener('resize', maybeLoadMore);
+    function maybeLoadMore(e) {
+        console.log(e);
+        console.log(e.scrollY);
+        console.log('scroll', e.target.scrollingElement);
+    }
+
+    async function handleNavClick(e) {
+        const loadType = e.target.dataset.type;
+        let storyIds;
+        switch(loadType) {
+            case "best":
+                storyIds = await getBestStories();
+                break;
+            case "top":
+                storyIds = await getTopStories();
+                break;
+            case "new":
+                storyIds = await getNewStories();
+                break;
+        }
+        stories = [];
+        storyIds.forEach(async id => {
+                const story = await getItem(id);
+                stories = [...stories, story];
+            });
+
+    }
 </script>
 
 <div class="container">
+    <nav>
+        <ul>
+            <li><button on:click={handleNavClick} data-type="best">best</button></li>
+            <li><button on:click={handleNavClick} data-type="top">top</button></li>
+            <li><button on:click={handleNavClick} data-type="new">new</button></li>
+        </ul>
+    </nav>
     <ol>
-
-        {#await stories then s}
-        {#each s as story, id}
+        {#if stories}
+        {#each stories as story, id}
             <li>
                 <div>
                     <a href="{story.url}" target="_blank">
@@ -24,7 +62,7 @@
                 </div>
             </li>
         {/each}
-        {/await}
+        {/if}
     </ol>
 </div>
 
@@ -33,5 +71,14 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
+    }
+
+    nav li {
+        display: inline-block;
+    }
+    
+    nav li a {
+        padding: 0.5em;
+        margin-right: 1em;
     }
 </style>
