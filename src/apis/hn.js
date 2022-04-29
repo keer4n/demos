@@ -10,7 +10,7 @@ export const getItem = (id) =>
     query(BASE+'item/'+id+'.json');
 
 export const getTopStories = () =>
-    query(BASE+'topstores.json');
+    query(BASE+'topstories.json');
 
 export const getNewStories = () => 
     query(BASE+'newstories.json');
